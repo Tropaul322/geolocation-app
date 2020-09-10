@@ -15,7 +15,6 @@ export default function WeatherBlock({temperature: {temp, weather, icon}}) {
 }   
 const styles = StyleSheet.create({
     text: {
-        padding: 40,
         fontWeight: '500',
         fontSize: 24,
         color: '#fff'
@@ -27,6 +26,8 @@ const styles = StyleSheet.create({
     },
     weather_block:{ 
         marginTop: 20,
+        paddingVertical: 10,
+        marginHorizontal: 30,
         borderStyle: 'solid',
         borderColor: '#fff',
         borderWidth: 2,

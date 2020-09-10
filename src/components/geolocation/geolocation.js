@@ -11,14 +11,11 @@ export default class Geolocation extends Component {
           position: '',
           weather: {},
         };
-      }
-
-    
-    componentDidMount(){
         navigator.geolocation.getCurrentPosition(this.getInfo);
         this.getInfoPos();
-        this.getInfoWeather()
-    }
+        this.getInfoWeather();
+      }
+
     getInfo = (posit) => {
         this.setState({
             latlong: {lat: posit.coords.latitude, lon: posit.coords.longitude}
@@ -42,38 +39,32 @@ export default class Geolocation extends Component {
                 })})
         }, 1000)
     }
+    
+
     render(){
         const {latlong: {lat, lon}, position, weather} = this.state
-        const coords = position ?  `Lat: ${lat}, Long: ${lon}` : 'load';
-        const pos = position ? position : '<ActivityIndicator/>'
-        console.log(weather);
+        const coords = position ?  `Lat: ${lat}, Long: ${lon}` : 'loading';
+        const pos = position ? position : 'loading'
     return(
         <View style={styles.container}>
-            <ScrollView>
                 <Text style={styles.title}>My geolocation</Text>
                 <Text style={styles.text}>Your coords:</Text>
                 <Text style={styles.coords}>{coords}</Text>
                 <Text style={styles.text}>Your location is: </Text>
                 <Text style={styles.coords}>{pos}</Text>
                 <WeatherBlock temperature={weather}></WeatherBlock> 
-            </ScrollView>
         </View>
     )
 
 }
 }   
 const styles = StyleSheet.create({
-    container: {
-        textAlign: 'center',
-        alignItems: 'center',
-        justifyContent: 'center'
-      },
     title: {
-        paddingTop: 60,
+        paddingTop: 45,
         color: '#fff',
-        fontSize: 40,
+        fontSize: 35,
         fontWeight:'900',
-        marginHorizontal: 5,
+        marginHorizontal: 8,
         textAlign: 'center',
       },
       coords: {
@@ -82,7 +73,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 20,
         fontWeight: '500',
-        marginHorizontal: 5,
+        marginHorizontal: 20,
       },
       text:{
         marginTop: 40,
