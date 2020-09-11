@@ -23,7 +23,7 @@
     "react-native-screens": "~2.9.0",
     "react-native-vector-icons": "^7.0.0",
     "react-native-web": "~0.11.7",
-    "undefined": "@expo/vector-icons/Ionicons"
+    "undefined": "@expo\\vector-icons\\Ionicons"
   },
   "devDependencies": {
     "@babel/core": "^7.8.6",

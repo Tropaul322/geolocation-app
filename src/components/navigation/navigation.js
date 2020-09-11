@@ -1,13 +1,15 @@
 import React from 'react';
-import { Text, View, ScrollView, StyleSheet, ImageBackground} from 'react-native';
+import { View, ScrollView, StyleSheet, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Geolocation from '../geolocation/geolocation';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import HistoryBlock from '../historyBlock/historyBlock'
+import { AntDesign } from '@expo/vector-icons';
 
 
 
-function HomeScreen({ navigation }) {
+
+function HomeScreen() {
   return (
     <ImageBackground source={require('../../../assets/main.jpg')} style={styles.container}>
         <ScrollView>
@@ -19,30 +21,36 @@ function HomeScreen({ navigation }) {
 
 function SettingsScreen() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Settings!</Text>
-    </View>
+    <ImageBackground source={require('../../../assets/main.jpg')} style={styles.container}>
+    <ScrollView>
+      <HistoryBlock />
+    </ScrollView>
+    </ImageBackground >
   );
 }
 
 const Tab = createBottomTabNavigator();
 
 export default function Navigation() {
+
+  
+
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator >
         <Tab.Screen name="Main" component={HomeScreen} 
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home" color={color} size={35} />
+            <AntDesign name="home" size={24} color={color} />
           ),
         }}/>
         <Tab.Screen name="Settings" component={SettingsScreen}
+        tabPress={()=> console.log('object')}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="history" color={color} size={35} />
+            <AntDesign name="book" size={24} color={color} />
           ),
         }}/>
       </Tab.Navigator>
@@ -51,6 +59,7 @@ export default function Navigation() {
 }
 const styles = StyleSheet.create({
     container: {
+      backgroundColor: '#000',
      flex:1,
       alignItems: 'center',
       justifyContent: 'center',

@@ -1,24 +1,31 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, ScrollView, View } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
 import WeatherBlock from '../weatherBlock/weather-block';
+import { Button } from 'react-native-paper';
 
 export default class Geolocation extends Component {
     constructor(props) {
         super(props);
-    
+        
         this.state = {
           latlong: {},
           position: '',
           weather: {},
+          date: {},
+          item: [],
+          
         };
         navigator.geolocation.getCurrentPosition(this.getInfo);
         this.getInfoPos();
         this.getInfoWeather();
+        setTimeout(()=> this.setStorage(this.state), 600)
       }
 
     getInfo = (posit) => {
+        const date = new Date() 
         this.setState({
-            latlong: {lat: posit.coords.latitude, lon: posit.coords.longitude}
+            latlong: {lat: posit.coords.latitude, lon: posit.coords.longitude},
+            date: {day: date.getDate(), month: date.getMonth(), hours: date.getHours(), min: date.getMinutes()}
         })
     }
     
@@ -27,7 +34,7 @@ export default class Geolocation extends Component {
         .then((response) => response.json())
         .then((data) => this.setState({
             position: data.results[0].formatted
-        }))}, 1500)
+        }))}, 400)
         
     }
     getInfoWeather(){
@@ -37,9 +44,28 @@ export default class Geolocation extends Component {
                 .then((data) => {this.setState({
                     weather: {temp: `${Math.round(data.main.temp-273)} °C`, weather: data.weather[0].main, icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` }
                 })})
-        }, 1000)
+        }, 400)
     }
     
+    
+    setStorage = async (state) => {
+        const {latlong, position, date} = state
+        let todos;
+        if (await AsyncStorage.getItem("todos") === null) {
+            todos = [];
+        } else {
+            todos = JSON.parse(await AsyncStorage.getItem("todos"))
+        }
+        todos.push({latlong: latlong, position: position, date: date})
+        await AsyncStorage.setItem('todos', JSON.stringify(todos))
+    }
+
+    refresh = () => {
+        navigator.geolocation.getCurrentPosition(this.getInfo);
+        this.getInfoPos();
+        this.getInfoWeather();
+        setTimeout(()=> this.setStorage(this.state), 500)
+    }
 
     render(){
         const {latlong: {lat, lon}, position, weather} = this.state
@@ -47,12 +73,14 @@ export default class Geolocation extends Component {
         const pos = position ? position : 'loading'
     return(
         <View style={styles.container}>
-                <Text style={styles.title}>My geolocation</Text>
+                <Text style={styles.title} onPress={() => this.onPressa(position)}>My geolocation</Text>
+                <Button color={'white'} onPress={()=>this.refresh()}>Refresh</Button>
                 <Text style={styles.text}>Your coords:</Text>
                 <Text style={styles.coords}>{coords}</Text>
                 <Text style={styles.text}>Your location is: </Text>
                 <Text style={styles.coords}>{pos}</Text>
                 <WeatherBlock temperature={weather}></WeatherBlock> 
+
         </View>
     )
 
