@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity} from 'react-native';
+import React, {Component, Fragment } from 'react';
+import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity, Appearance} from 'react-native';
 import { Button } from 'react-native-paper';
 
 
@@ -12,7 +12,8 @@ export default class HistoryBlock extends Component {
             items: [],
             refresh: false
         };
-      }
+    }
+
     getData = async ()=>{
         try{
             let data = (await AsyncStorage.getItem('todos'))
@@ -60,7 +61,7 @@ export default class HistoryBlock extends Component {
                       <Text style={styles.text}>{el.latlong.lon}</Text>
                   </View>
             </View>
-            </TouchableOpacity> )) : null
+            </TouchableOpacity>)) : null
        
         return(
             <View style={styles.container}>
@@ -76,56 +77,63 @@ export default class HistoryBlock extends Component {
 const styles = StyleSheet.create({
     container:{
         alignItems: 'center',
-         justifyContent: 'center',
+        justifyContent: 'center',
     },
     text:{
-        fontSize: 11
+        fontSize: 11,
+        fontWeight: 600
     },
     container_item: {
         display: 'flex',
         flexDirection: 'row',
-        height: 100,
+        height: 80,
         alignItems: 'center',
-         justifyContent: 'center',
+        justifyContent: 'center',
         backgroundColor: '#fefefefe',
         marginVertical: 20,
-        borderRadius: 10,    
+        borderStyle: 'solid',
+        borderColor: '#000',
+        borderRadius: 10,
+        borderWidth: 1    
     },
     container_item_time: {
         alignItems: 'center',
-         justifyContent: 'center',
+        justifyContent: 'center',
         width: 50,
-        height: 100,
+        height: 80,
         borderStyle: 'solid',
         borderColor: '#000',
-        borderWidth: 1
+        borderRightWidth:   1
+        
+        
     },
     container_item_position:{
         width: 150,
-        height: 100,
+        height: 80,
         alignItems: 'center',
-         justifyContent: 'center',
-         paddingHorizontal: 10,
-         borderStyle: 'solid',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+        borderStyle: 'solid',
         borderColor: '#000',
-        borderWidth: 1
+        borderRightWidth:   1
+        
 
     },
     container_item_latlon: {
         width: 120,
-        height: 100,
+        height: 80,
         alignItems: 'center',
         justifyContent: 'center',
-        borderStyle: 'solid',
-        paddingHorizontal: 10,
-        borderColor: '#000',
-        borderWidth: 1     
+      
     },
     mt: {
         width: 200,
+        borderColor: '#fff',
         marginTop: 50
     },
     mt_2:{
+        marginTop: 20,
+        borderColor: '#fff',
         width: 200,
     }
 

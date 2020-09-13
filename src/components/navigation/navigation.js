@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, ImageBackground } from 'react-native';
+import { View, ScrollView, StyleSheet, ImageBackground, Appearance } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Geolocation from '../geolocation/geolocation';
@@ -37,7 +37,7 @@ export default function Navigation() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator >
+      <Tab.Navigator>
         <Tab.Screen name="Main" component={HomeScreen} 
         options={{
           tabBarLabel: 'Home',
@@ -58,10 +58,10 @@ export default function Navigation() {
 }
 const styles = StyleSheet.create({
     container: {
-      backgroundColor: '#000',
+    backgroundColor: '#000',
      flex:1,
-      alignItems: 'center',
-      justifyContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     },
   });
   

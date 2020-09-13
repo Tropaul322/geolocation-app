@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
+import React, {Component, Fragment} from 'react';
+import { StyleSheet, Text, View, AsyncStorage, Appearance } from 'react-native';
 import WeatherBlock from '../weatherBlock/weather-block';
 import { Button } from 'react-native-paper';
 
@@ -21,11 +21,29 @@ export default class Geolocation extends Component {
         this.getInfoWeather();
       }
 
+    getFormattedDate = (timestamp) => {
+        const date = new Date(timestamp * 1000);
+        const year = date.getFullYear();
+        let month = date.getMonth() + 1;
+        month = month > 9 ? month : `0${month}`;
+        let day = date.getDate();
+        day = day > 9 ? day : `0${day}`;
+        return `${year}-${month}-${day} ${String(date).slice(15, 21)}`;
+      };
+
     getInfo = (posit) => {
-        const date = new Date() 
+        const date = new Date();
+        let month = date.getMonth() + 1;
+        month = month > 9 ? month : `0${month}`;
+        let day = date.getDate();
+        day = day > 9 ? day : `0${day}`;
+        let hours = date.getHours();
+        hours = hours > 9 ? hours : `0${hours}`;
+        let minutes = date.getMinutes();
+        minutes = minutes > 9 ? minutes : `0${minutes}`;
         this.setState({
             latlong: {lat: posit.coords.latitude, lon: posit.coords.longitude},
-            date: {day: date.getDate(), month: date.getMonth(), hours: date.getHours(), min: date.getMinutes()}
+            date: {day: day, month:month, hours: hours, min: minutes}
         })
     }
     
@@ -36,7 +54,7 @@ export default class Geolocation extends Component {
             position: {pos: data.results[0].formatted}
         }))}, 400)
     }
-    
+
     getInfoWeather(){
         setTimeout(()=>{
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.latlong.lat}&lon=${this.state.latlong.lon}&appid=c92437d1837e764ceeb7115131fec2a8`)
@@ -84,15 +102,15 @@ export default class Geolocation extends Component {
         const {latlong: {lat, lon}, position, weather,isShow, canClick} = this.state
         const coords = position.pos ?  `Lat: ${lat}, Long: ${lon}` : 'loading';
         const pos = position.pos ? position.pos : 'loading'
-        const data = isShow ? (<><Text style={styles.text}>Your coords:</Text>
+        const data = isShow ? (<Fragment><Text style={styles.text}>Your coords:</Text>
             <Text style={styles.coords}>{coords}</Text>
             <Text style={styles.text}>Your location is: </Text>
             <Text style={styles.coords}>{pos}</Text>
-            <WeatherBlock temperature={weather}></WeatherBlock></>) : null
+            <WeatherBlock temperature={weather}></WeatherBlock></Fragment>) : null
     return(
         <View style={styles.container}>
-                <Text style={styles.title} onPress={() => this.onPressa(position)}>My geolocation</Text>
-                <Button color={'white'} disabled={canClick} onPress={()=>this.refresh()}>Get Geolocation</Button>
+                <Text style={styles.title}>My geolocation</Text>
+                <Button style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
                 {data}
         </View>
     )
@@ -122,5 +140,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 24,
         color: '#fff'
+      },
+      button:{
+        marginTop: 20 ,
+      },
+      button_text:{
+        fontSize: 20
       }
 });

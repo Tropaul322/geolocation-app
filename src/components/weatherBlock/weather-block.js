@@ -7,7 +7,7 @@ export default function WeatherBlock({temperature: {temp, weather, icon}}) {
         <View style={styles.weather_block}>
             <Text style={styles.text}>Temperature: </Text>
             <Text style={styles.degree}>{temp}</Text>
-            <Image style={{ width: 50, height: 50 }} source={{ uri: icon }} />
+            <Image style={{ width: 75, height: 75 }} source={{ uri: icon }} />
             <Text style={styles.degree}>{weather}</Text>
         </View>
     )
