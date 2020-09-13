@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, ScrollView, StyleSheet, ImageBackground, Appearance } from 'react-native';
+import { ScrollView, StyleSheet, ImageBackground } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Geolocation from '../geolocation/geolocation';
 import HistoryBlock from '../historyBlock/historyBlock'
 import { AntDesign } from '@expo/vector-icons';
-
-
 
 
 function HomeScreen() {
@@ -33,19 +31,17 @@ const Tab = createBottomTabNavigator();
 
 export default function Navigation() {
 
-  
-
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Main" component={HomeScreen} 
+        <Tab.Screen name="Home" component={HomeScreen} 
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
             <AntDesign name="home" size={24} color={color} />
           ),
         }}/>
-        <Tab.Screen name="Settings" component={SettingsScreen}
+        <Tab.Screen name="History" component={SettingsScreen}
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (

@@ -1,5 +1,5 @@
-import React, {Component, Fragment } from 'react';
-import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity, Appearance} from 'react-native';
+import React, {Component } from 'react';
+import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity} from 'react-native';
 import { Button } from 'react-native-paper';
 import CurrentLocation from '../currentLocation/currentLocation'
 
@@ -60,7 +60,6 @@ export default class HistoryBlock extends Component {
     }
       
     render(){
-        console.log(this.state.page);
         const data = this.state.items !== [] ? this.state.items.map((el)=> (<TouchableOpacity key={Math.random()*1000} onPress={()=> this.showItem(el)}>
             <View style={styles.container_item}>
                   <View style={styles.container_item_time}>

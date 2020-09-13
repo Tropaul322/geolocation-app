@@ -1,12 +1,11 @@
 import React, {Component, Fragment} from 'react';
-import { StyleSheet, Text, View, AsyncStorage, Appearance } from 'react-native';
+import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
 import WeatherBlock from '../weatherBlock/weather-block';
 import { Button } from 'react-native-paper';
 
 export default class Geolocation extends Component {
     constructor(props) {
         super(props);
-        
         this.state = {
           latlong: {},
           position: {},
@@ -14,25 +13,10 @@ export default class Geolocation extends Component {
           date: {},
           canClick: false,
           isShow: false
-          
         };
-        this.fetchInfo()
+        navigator.geolocation.getCurrentPosition(this.getInfo);
       }
 
-    fetchInfo = async() =>{
-            await navigator.geolocation.getCurrentPosition(this.getInfo);
-            await this.getInfoPos();
-            await this.getInfoWeather();
-    } 
-    getFormattedDate = (timestamp) => {
-        const date = new Date(timestamp * 1000);
-        const year = date.getFullYear();
-        let month = date.getMonth() + 1;
-        month = month > 9 ? month : `0${month}`;
-        let day = date.getDate();
-        day = day > 9 ? day : `0${day}`;
-        return `${year}-${month}-${day} ${String(date).slice(15, 21)}`;
-      };
 
     getInfo = (posit) => {
         const date = new Date();
@@ -51,14 +35,6 @@ export default class Geolocation extends Component {
     }
     
     getInfoPos = ()=>{
-        setTimeout(()=> {  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=en&pretty=1`)
-        .then((response) => response.json())
-        .then((data) => this.setState({
-            position: {pos: data.results[0].formatted}
-        }))}, 400)
-    }
-
-    getInfoWeather(){
         setTimeout(()=>{
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.latlong.lat}&lon=${this.state.latlong.lon}&appid=c92437d1837e764ceeb7115131fec2a8`)
                 .then((response) => response.json())
@@ -66,39 +42,44 @@ export default class Geolocation extends Component {
                     weather: {temp: `${Math.round(data.main.temp-273)} °C`, weather: data.weather[0].main, icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` }
                 })})
         }, 400)
-    }
-    
+        setTimeout(()=> { 
+            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=en&pretty=1`)
+                .then((response) => response.json())
+                .then((data) => {this.setState({
+                    position: {pos: data.results[0].formatted}
+                }); this.setStorage(this.state)})}, 400)
+    }   
     
     setStorage = async (state) => {
         const {latlong, position, date, weather} = state
-        let todos;
-        if (await AsyncStorage.getItem("todos") === null) {
-            todos = [];
+        if (position !== {} && latlong !== {} && weather !== {} && date !== {}) {
+            let todos;
+            if (await AsyncStorage.getItem("todos") === null) {
+                todos = [];
+            } else {
+                todos = JSON.parse(await AsyncStorage.getItem("todos"))
+            }
+            todos.push({latlong: latlong, position: position, date: date, weather: weather})
+            AsyncStorage.setItem('todos', JSON.stringify(todos))
         } else {
-            todos = JSON.parse(await AsyncStorage.getItem("todos"))
+            this.setStorage(this.state)
         }
-        todos.push({latlong: latlong, position: position, date: date, weather: weather})
-        AsyncStorage.setItem('todos', JSON.stringify(todos))
+    }
+
+    refresh = async () => {
         this.setState({
             canClick: true
         })
-    }
-
-    refresh = () => {
-        setTimeout(async ()=>{
-            navigator.geolocation.getCurrentPosition(this.getInfo);
-            await this.getInfoPos();
-            await this.getInfoWeather();
-            await this.setStorage(this.state)
+        await navigator.geolocation.getCurrentPosition(this.getInfo);
+        await this.getInfoPos();
+        this.setState({
+            isShow: true,
+        })
+        setTimeout(() => {
             this.setState({
-                isShow: true,
+                canClick: false
             })
-            setTimeout(() => {
-                this.setState({
-                    canClick: false
-                })
-            })
-        }, 300)
+        }, 800)
     }
 
     render(){
@@ -110,21 +91,21 @@ export default class Geolocation extends Component {
             <Text style={styles.text}>Your location is: </Text>
             <Text style={styles.coords}>{pos}</Text>
             <WeatherBlock temperature={weather}></WeatherBlock></Fragment>) : null
-    return(
-        <View style={styles.container}>
-                <Text style={styles.title}>My geolocation</Text>
-                <Button mode={"outlined"} style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
-                {data}
-        </View>
-    )
-
-}
+        return(
+            <View style={styles.container}>
+                    <Text style={styles.title}>My geolocation</Text>
+                    <Button mode={"outlined"} style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
+                    {data}
+            </View>
+        )
+    }
 }   
+
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
         justifyContent: 'center',
-        },
+    },
     title: {
         paddingTop: 45,
         color: '#fff',
@@ -132,7 +113,7 @@ const styles = StyleSheet.create({
         fontWeight:'900',
         marginHorizontal: 8,
         textAlign: 'center',
-      },
+    },
       coords: {
         marginTop: 10,
         textAlign: 'center',
@@ -140,20 +121,20 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '500',
         marginHorizontal: 20,
-      },
+    },
       text:{
         marginTop: 40,
         fontWeight: '500',
         textAlign: 'center',
         fontSize: 24,
         color: '#fff'
-      },
+    },
       button:{
         marginTop: 20 ,
         borderColor: '#fff',
         width: 250,
-      },
+    },
       button_text:{
         fontSize: 20
-      }
+    }
 });
