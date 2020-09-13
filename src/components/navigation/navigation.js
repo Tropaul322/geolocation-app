@@ -33,19 +33,27 @@ export default function Navigation() {
 
   return (
     <NavigationContainer>
-      <Tab.Navigator>
+      <Tab.Navigator
+      tabBarOptions={{
+        inactiveTintColor: '#fff',  
+        labelStyle: {fontSize: 14},
+        inactiveBackgroundColor: '#02184d',
+        activeBackgroundColor: '#fff'
+
+      }}
+      >
         <Tab.Screen name="Home" component={HomeScreen} 
         options={{
           tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
-            <AntDesign name="home" size={24} color={color} />
+            <AntDesign name="home" size={22} color={color} />
           ),
         }}/>
-        <Tab.Screen name="History" component={SettingsScreen}
+        <Tab.Screen  name="History" component={SettingsScreen}
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (
-            <AntDesign name="book" size={24} color={color} />
+            <AntDesign name="book" size={22} color={color} />
           ),
         }}/>
       </Tab.Navigator>

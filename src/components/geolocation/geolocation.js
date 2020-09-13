@@ -12,9 +12,9 @@ export default class Geolocation extends Component {
           weather: {},
           date: {},
           canClick: false,
-          isShow: false
         };
         navigator.geolocation.getCurrentPosition(this.getInfo);
+        this.getInfoPos()
       }
 
 
@@ -35,15 +35,15 @@ export default class Geolocation extends Component {
     }
     
     getInfoPos = ()=>{
-        setTimeout(()=>{
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.latlong.lat}&lon=${this.state.latlong.lon}&appid=c92437d1837e764ceeb7115131fec2a8`)
+        setTimeout( async ()=>{
+            await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.latlong.lat}&lon=${this.state.latlong.lon}&appid=c92437d1837e764ceeb7115131fec2a8`)
                 .then((response) => response.json())
                 .then((data) => {this.setState({
                     weather: {temp: `${Math.round(data.main.temp-273)} °C`, weather: data.weather[0].main, icon: `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png` }
                 })})
-        }, 400)
-        setTimeout(()=> { 
-            fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=en&pretty=1`)
+        }, 200)
+        setTimeout(async ()=> { 
+            await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=en&pretty=1`)
                 .then((response) => response.json())
                 .then((data) => {this.setState({
                     position: {pos: data.results[0].formatted}
@@ -59,7 +59,7 @@ export default class Geolocation extends Component {
             } else {
                 todos = JSON.parse(await AsyncStorage.getItem("todos"))
             }
-            todos.push({latlong: latlong, position: position, date: date, weather: weather})
+            todos.unshift({latlong: latlong, position: position, date: date, weather: weather})
             AsyncStorage.setItem('todos', JSON.stringify(todos))
         } else {
             this.setStorage(this.state)
@@ -72,9 +72,6 @@ export default class Geolocation extends Component {
         })
         await navigator.geolocation.getCurrentPosition(this.getInfo);
         await this.getInfoPos();
-        this.setState({
-            isShow: true,
-        })
         setTimeout(() => {
             this.setState({
                 canClick: false
@@ -86,16 +83,17 @@ export default class Geolocation extends Component {
         const {latlong: {lat, lon}, position, weather,isShow, canClick} = this.state
         const coords = position.pos ?  `Lat: ${lat}, Long: ${lon}` : 'loading';
         const pos = position.pos ? position.pos : 'loading'
-        const data = isShow ? (<Fragment><Text style={styles.text}>Your coords:</Text>
-            <Text style={styles.coords}>{coords}</Text>
-            <Text style={styles.text}>Your location is: </Text>
-            <Text style={styles.coords}>{pos}</Text>
-            <WeatherBlock temperature={weather}></WeatherBlock></Fragment>) : null
         return(
             <View style={styles.container}>
                     <Text style={styles.title}>My geolocation</Text>
-                    <Button mode={"outlined"} style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
-                    {data}
+                    <Button mode={"contained"} style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
+                    <Fragment>
+                         <Text style={styles.text}>Your coords:</Text>
+                         <Text style={styles.coords}>{coords}</Text>
+                         <Text style={styles.text}>Your location is: </Text>
+                         <Text style={styles.coords}>{pos}</Text>
+                         <WeatherBlock temperature={weather}></WeatherBlock>
+                    </Fragment>
             </View>
         )
     }
@@ -131,7 +129,6 @@ const styles = StyleSheet.create({
     },
       button:{
         marginTop: 20 ,
-        borderColor: '#fff',
         width: 250,
     },
       button_text:{

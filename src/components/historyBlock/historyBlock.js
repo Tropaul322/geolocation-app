@@ -3,12 +3,9 @@ import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity} from 'react-nati
 import { Button } from 'react-native-paper';
 import CurrentLocation from '../currentLocation/currentLocation'
 
-
-
 export default class HistoryBlock extends Component {
     constructor(props) {
         super(props);
-    
         this.state = {
             items: [],
             refresh: false,
@@ -71,16 +68,16 @@ export default class HistoryBlock extends Component {
                   </View>
                   <View style={styles.container_item_latlon}>
                       <Text style={styles.text}>Lat:</Text>
-                      <Text style={styles.text}>{el.latlong.lat}</Text>
+                      <Text style={styles.text}>{(el.latlong.lat).toFixed(5)}</Text>
                       <Text style={styles.text}>Long:</Text>
-                      <Text style={styles.text}>{el.latlong.lon}</Text>
+                      <Text style={styles.text}>{(el.latlong.lon).toFixed(5)}</Text>
                   </View>
             </View>
             </TouchableOpacity>)) : null;
         
         const view = this.state.page === 2 ? (<CurrentLocation item={this.state.currentItem} closeClick={this.closeItem}/>) : (<View style={styles.container}>
-            <Button  mode={"outlined"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
-            <Button  mode={"outlined"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
+            <Button  mode={"contained"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
+            <Button  mode={"contained"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
             {data}
         </View>)
        
@@ -98,6 +95,8 @@ const styles = StyleSheet.create({
     },
     text:{
         fontSize: 11,
+        color: '#fff',
+        overflow: 'hidden'
     },
     container_item: {
         display: 'flex',
@@ -105,11 +104,12 @@ const styles = StyleSheet.create({
         height: 80,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#fefefefe',
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
         marginVertical: 20,
         borderStyle: 'solid',
         borderColor: '#000',
         borderRadius: 10,
+        
         borderWidth: 1    
     },
     container_item_time: {
@@ -119,24 +119,21 @@ const styles = StyleSheet.create({
         height: 80,
         borderStyle: 'solid',
         borderColor: '#000',
-        borderRightWidth:   1
-        
-        
+        borderRightWidth:   1,
     },
     container_item_position:{
-        width: 150,
+        width: 130,
         height: 80,
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 10,
         borderStyle: 'solid',
         borderColor: '#000',
-        borderRightWidth:   1
-        
+        borderRightWidth:   1,
 
     },
     container_item_latlon: {
-        width: 120,
+        width: 100,
         height: 80,
         alignItems: 'center',
         justifyContent: 'center',
@@ -144,12 +141,10 @@ const styles = StyleSheet.create({
     },
     mt: {
         width: 200,
-        borderColor: '#fff',
         marginTop: 50
     },
     mt_2:{
         marginTop: 20,
-        borderColor: '#fff',
         width: 200,
     }
 

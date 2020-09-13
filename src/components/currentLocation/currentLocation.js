@@ -9,25 +9,22 @@ export default class CurrentLocation extends Component {
         this.state = {
             isShow: true
         };
-
       }
 
-    
     render(){
-        console.log(this.props);
         const { closeClick } = this.props
         const { date:{ day, hours, month, min}, latlong: {lat, lon}, position:{pos}, weather } = this.props.item
         const data = this.state.isShow ? (<Fragment>
-            <Text style={styles.text}>Time</Text>
+            <Text style={styles.texts}>Time</Text>
             <Text style={styles.coords}>{day}.{month} / {hours}:{min}</Text>
-            <Text style={styles.text}>Your coords:</Text>
+            <Text style={styles.texts}>Your coords:</Text>
             <Text style={styles.coords}>Lat: {lat}, Long: {lon}</Text>
-            <Text style={styles.text}>Your location is: </Text>
+            <Text style={styles.texts}>Your location is: </Text>
             <Text style={styles.coords}>{pos}</Text>
             <WeatherBlock  temperature={weather}></WeatherBlock></Fragment>) : null
     return(
         <View style={styles.container}>
-                <Button mode={"outlined"} style={styles.button} color={'white'} onPress={()=> closeClick()}><Text style={styles.button_text}>Back to History</Text></Button>
+                <Button mode={"contained"} style={styles.button} color={'white'} onPress={()=> closeClick()}><Text style={styles.button_text}>Back to History</Text></Button>
                 {data}
         </View>
     )
@@ -55,7 +52,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginHorizontal: 20,
       },
-      text:{
+      texts:{
         marginTop: 40,
         fontWeight: '500',
         textAlign: 'center',
