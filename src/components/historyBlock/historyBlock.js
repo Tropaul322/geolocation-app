@@ -1,6 +1,7 @@
 import React, {Component, Fragment } from 'react';
 import { StyleSheet, Text, View,AsyncStorage ,TouchableOpacity, Appearance} from 'react-native';
 import { Button } from 'react-native-paper';
+import CurrentLocation from '../currentLocation/currentLocation'
 
 
 
@@ -10,7 +11,9 @@ export default class HistoryBlock extends Component {
     
         this.state = {
             items: [],
-            refresh: false
+            refresh: false,
+            currentItem: {},
+            page: 1
         };
     }
 
@@ -42,10 +45,23 @@ export default class HistoryBlock extends Component {
         } else {
             return
         }
-     }  
+     }
+     
+    showItem = (el) => {
+        this.setState({
+            currentItem: el,
+            page: 2
+        })
+    }
+    closeItem = () => {
+       this.setState({
+           page: 1
+       })
+    }
       
     render(){
-        const data = this.state.items !== [] ? this.state.items.map((el)=> (<TouchableOpacity key={Math.random()*1000}>
+        console.log(this.state.page);
+        const data = this.state.items !== [] ? this.state.items.map((el)=> (<TouchableOpacity key={Math.random()*1000} onPress={()=> this.showItem(el)}>
             <View style={styles.container_item}>
                   <View style={styles.container_item_time}>
                       <Text style={styles.text}>{el.date.day}.{el.date.month}</Text>
@@ -61,14 +77,16 @@ export default class HistoryBlock extends Component {
                       <Text style={styles.text}>{el.latlong.lon}</Text>
                   </View>
             </View>
-            </TouchableOpacity>)) : null
+            </TouchableOpacity>)) : null;
+        
+        const view = this.state.page === 2 ? (<CurrentLocation item={this.state.currentItem} closeClick={this.closeItem}/>) : (<View style={styles.container}>
+            <Button  mode={"outlined"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
+            <Button  mode={"outlined"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
+            {data}
+        </View>)
        
         return(
-            <View style={styles.container}>
-                <Button  mode={"outlined"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
-                <Button  mode={"outlined"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
-                {data}
-            </View>
+            view
         )
 
     }
@@ -81,7 +99,6 @@ const styles = StyleSheet.create({
     },
     text:{
         fontSize: 11,
-        fontWeight: 600
     },
     container_item: {
         display: 'flex',

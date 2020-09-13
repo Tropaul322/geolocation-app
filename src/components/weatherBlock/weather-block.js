@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
         
     },
     weather_block:{ 
-        marginTop: 20,
+        marginVertical: 20,
+        width: 250,
         paddingVertical: 10,
         marginHorizontal: 30,
         borderStyle: 'solid',

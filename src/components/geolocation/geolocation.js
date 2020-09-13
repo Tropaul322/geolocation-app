@@ -16,11 +16,14 @@ export default class Geolocation extends Component {
           isShow: false
           
         };
-        navigator.geolocation.getCurrentPosition(this.getInfo);
-        this.getInfoPos();
-        this.getInfoWeather();
+        this.fetchInfo()
       }
 
+    fetchInfo = async() =>{
+            await navigator.geolocation.getCurrentPosition(this.getInfo);
+            await this.getInfoPos();
+            await this.getInfoWeather();
+    } 
     getFormattedDate = (timestamp) => {
         const date = new Date(timestamp * 1000);
         const year = date.getFullYear();
@@ -48,7 +51,7 @@ export default class Geolocation extends Component {
     }
     
     getInfoPos = ()=>{
-        setTimeout(()=> {  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=ru&pretty=1`)
+        setTimeout(()=> {  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=en&pretty=1`)
         .then((response) => response.json())
         .then((data) => this.setState({
             position: {pos: data.results[0].formatted}
@@ -67,14 +70,14 @@ export default class Geolocation extends Component {
     
     
     setStorage = async (state) => {
-        const {latlong, position, date} = state
+        const {latlong, position, date, weather} = state
         let todos;
         if (await AsyncStorage.getItem("todos") === null) {
             todos = [];
         } else {
             todos = JSON.parse(await AsyncStorage.getItem("todos"))
         }
-        todos.push({latlong: latlong, position: position, date: date})
+        todos.push({latlong: latlong, position: position, date: date, weather: weather})
         AsyncStorage.setItem('todos', JSON.stringify(todos))
         this.setState({
             canClick: true
@@ -110,7 +113,7 @@ export default class Geolocation extends Component {
     return(
         <View style={styles.container}>
                 <Text style={styles.title}>My geolocation</Text>
-                <Button style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
+                <Button mode={"outlined"} style={styles.button} color={'white'} disabled={canClick} onPress={()=>this.refresh()}><Text style={styles.button_text}>Get Geolocation</Text></Button>
                 {data}
         </View>
     )
@@ -118,6 +121,10 @@ export default class Geolocation extends Component {
 }
 }   
 const styles = StyleSheet.create({
+    container: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        },
     title: {
         paddingTop: 45,
         color: '#fff',
@@ -127,7 +134,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
       },
       coords: {
-        marginTop: 20,
+        marginTop: 10,
         textAlign: 'center',
         color: '#fff',
         fontSize: 20,
@@ -143,6 +150,8 @@ const styles = StyleSheet.create({
       },
       button:{
         marginTop: 20 ,
+        borderColor: '#fff',
+        width: 250,
       },
       button_text:{
         fontSize: 20
