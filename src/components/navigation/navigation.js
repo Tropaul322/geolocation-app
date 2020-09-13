@@ -46,7 +46,6 @@ export default function Navigation() {
           ),
         }}/>
         <Tab.Screen name="Settings" component={SettingsScreen}
-        tabPress={()=> console.log('object')}
         options={{
           tabBarLabel: 'History',
           tabBarIcon: ({ color }) => (

@@ -9,16 +9,16 @@ export default class Geolocation extends Component {
         
         this.state = {
           latlong: {},
-          position: '',
+          position: {},
           weather: {},
           date: {},
-          item: [],
+          canClick: false,
+          isShow: false
           
         };
         navigator.geolocation.getCurrentPosition(this.getInfo);
         this.getInfoPos();
         this.getInfoWeather();
-        setTimeout(()=> this.setStorage(this.state), 600)
       }
 
     getInfo = (posit) => {
@@ -29,14 +29,14 @@ export default class Geolocation extends Component {
         })
     }
     
-    getInfoPos(){
-        setTimeout(()=> {fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=ru&pretty=1`)
+    getInfoPos = ()=>{
+        setTimeout(()=> {  fetch(`https://api.opencagedata.com/geocode/v1/json?q=${this.state.latlong.lat}%2C%20${this.state.latlong.lon}&key=10bd99abd5a040aab9871541a080c076&language=ru&pretty=1`)
         .then((response) => response.json())
         .then((data) => this.setState({
-            position: data.results[0].formatted
+            position: {pos: data.results[0].formatted}
         }))}, 400)
-        
     }
+    
     getInfoWeather(){
         setTimeout(()=>{
             fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${this.state.latlong.lat}&lon=${this.state.latlong.lon}&appid=c92437d1837e764ceeb7115131fec2a8`)
@@ -57,30 +57,43 @@ export default class Geolocation extends Component {
             todos = JSON.parse(await AsyncStorage.getItem("todos"))
         }
         todos.push({latlong: latlong, position: position, date: date})
-        await AsyncStorage.setItem('todos', JSON.stringify(todos))
+        AsyncStorage.setItem('todos', JSON.stringify(todos))
+        this.setState({
+            canClick: true
+        })
     }
 
     refresh = () => {
-        navigator.geolocation.getCurrentPosition(this.getInfo);
-        this.getInfoPos();
-        this.getInfoWeather();
-        setTimeout(()=> this.setStorage(this.state), 500)
+        setTimeout(async ()=>{
+            navigator.geolocation.getCurrentPosition(this.getInfo);
+            await this.getInfoPos();
+            await this.getInfoWeather();
+            await this.setStorage(this.state)
+            this.setState({
+                isShow: true,
+            })
+            setTimeout(() => {
+                this.setState({
+                    canClick: false
+                })
+            })
+        }, 300)
     }
 
     render(){
-        const {latlong: {lat, lon}, position, weather} = this.state
-        const coords = position ?  `Lat: ${lat}, Long: ${lon}` : 'loading';
-        const pos = position ? position : 'loading'
+        const {latlong: {lat, lon}, position, weather,isShow, canClick} = this.state
+        const coords = position.pos ?  `Lat: ${lat}, Long: ${lon}` : 'loading';
+        const pos = position.pos ? position.pos : 'loading'
+        const data = isShow ? (<><Text style={styles.text}>Your coords:</Text>
+            <Text style={styles.coords}>{coords}</Text>
+            <Text style={styles.text}>Your location is: </Text>
+            <Text style={styles.coords}>{pos}</Text>
+            <WeatherBlock temperature={weather}></WeatherBlock></>) : null
     return(
         <View style={styles.container}>
                 <Text style={styles.title} onPress={() => this.onPressa(position)}>My geolocation</Text>
-                <Button color={'white'} onPress={()=>this.refresh()}>Refresh</Button>
-                <Text style={styles.text}>Your coords:</Text>
-                <Text style={styles.coords}>{coords}</Text>
-                <Text style={styles.text}>Your location is: </Text>
-                <Text style={styles.coords}>{pos}</Text>
-                <WeatherBlock temperature={weather}></WeatherBlock> 
-
+                <Button color={'white'} disabled={canClick} onPress={()=>this.refresh()}>Get Geolocation</Button>
+                {data}
         </View>
     )
 

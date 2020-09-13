@@ -15,17 +15,17 @@ export default class HistoryBlock extends Component {
       }
     getData = async ()=>{
         try{
-            let user = (await AsyncStorage.getItem('todos'))
-            const data = JSON.parse(user)
+            let data = (await AsyncStorage.getItem('todos'))
+            const dataInfo = JSON.parse(data)
             this.setState({
-                items: data
+                items: dataInfo
             })
-            console.log(user);
         }
         catch{
             alert('error')
         }
      } 
+
      clearStorage = () =>{
          AsyncStorage.clear()
          this.setState({
@@ -33,15 +33,14 @@ export default class HistoryBlock extends Component {
              refresh: true
          })
      }
+     
      refreshHistory = async () =>{
-        let user = (await AsyncStorage.getItem('todos'))
-        console.log(user);
-         if(user !== null){
+        let data = (await AsyncStorage.getItem('todos'))
+         if(data !== null){
             this.getData()
         } else {
             return
         }
-
      }  
       
     render(){
@@ -52,7 +51,7 @@ export default class HistoryBlock extends Component {
                       <Text style={styles.text}>{el.date.hours}:{el.date.min}</Text>
                   </View>
                   <View style={styles.container_item_position}>
-                      <Text style={styles.text}>{el.position}</Text>
+                      <Text style={styles.text}>{el.position.pos}</Text>
                   </View>
                   <View style={styles.container_item_latlon}>
                       <Text style={styles.text}>Lat:</Text>
@@ -63,16 +62,17 @@ export default class HistoryBlock extends Component {
             </View>
             </TouchableOpacity> )) : null
        
-    return(
-        <View style={styles.container}>
-            <Button  mode={"outlined"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
-            <Button  mode={"outlined"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
-            {data}
-        </View>
-    )
+        return(
+            <View style={styles.container}>
+                <Button  mode={"outlined"} style={styles.mt} color={'white'} onPress={()=> this.clearStorage()}>Clear History</Button>
+                <Button  mode={"outlined"} style={styles.mt_2} color={'white'} onPress={()=>this.refreshHistory()}>Get History</Button>
+                {data}
+            </View>
+        )
 
+    }
 }
-}   
+
 const styles = StyleSheet.create({
     container:{
         alignItems: 'center',
